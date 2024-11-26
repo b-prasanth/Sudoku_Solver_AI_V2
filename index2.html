@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot Sudoku Solver</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: #f7f7f7;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    .chatbox {
+      width: 400px;
+      height: 500px;
+      border: 1px solid #ccc;
+      background-color: white;
+      padding: 10px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    .chatbox div {
+      margin-bottom: 10px;
+    }
+    .user-message {
+      text-align: right;
+      color: #2e7d32;
+    }
+    .bot-message {
+      text-align: left;
+      color: #1976d2;
+    }
+    .user-input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+    .btn {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .btn:hover {
+      background-color: #45a049;
+    }
+    .sudoku-grid {
+      display: grid;
+      grid-template-columns: repeat(9, 40px);
+      grid-gap: 5px;
+      margin-top: 20px;
+    }
+    .sudoku-grid input {
+      width: 40px;
+      height: 40px;
+      font-size: 18px;
+      text-align: center;
+    }
+    .grid-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Chatbot Sudoku Solver</h1>
+
+  <div class="chatbox" id="chatbox"></div>
+
+  <div>
+    <textarea id="sudokuInput" class="user-input" placeholder="Or paste Sudoku puzzle as an array (9x9 grid)..." rows="3"></textarea>
+    <button class="btn" onclick="processInput()">Submit</button>
+    <button class="btn" onclick="generateRandomPuzzle()">Generate Random Puzzle</button>
+    <button class="btn" onclick="openGridPopup()">Enter Puzzle in Grid</button>
+  </div>
+
+  <!-- Sudoku Grid Popup -->
+  <div class="overlay" id="overlay"></div>
+  <div class="grid-popup" id="gridPopup">
+    <h2>Enter Sudoku Puzzle</h2>
+    <div class="sudoku-grid" id="sudokuGrid"></div>
+    <button class="btn" onclick="submitGridPuzzle()">Submit Puzzle</button>
+    <button class="btn" onclick="closeGridPopup()">Close</button>
+  </div>
+
+  <script>
+    let generatedPuzzle = null;
+    let solvedPuzzle = null;
+
+    function addChatMessage(message, sender = 'bot') {
+      const chatbox = document.getElementById('chatbox');
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add(sender === 'bot' ? 'bot-message' : 'user-message');
+      messageDiv.innerText = message;
+      chatbox.appendChild(messageDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    function processInput() {
+      const userInput = document.getElementById('sudokuInput').value.trim();
+
+      // Add the user's message to the chat window
+      addChatMessage(userInput, 'user');
+
+      // Check the user input and respond accordingly
+      if (userInput === 'yes' && solvedPuzzle) {
+        addChatMessage("Here is the solution:", "bot");
+        displaySudoku(solvedPuzzle);
+      } else if (userInput === 'no') {
+        addChatMessage("Okay, I won't show the solution.", "bot");
+      } else {
+        addChatMessage("Please type 'yes' if you want the solution.", "bot");
+      }
+
+      // Clear the input field
+      document.getElementById('sudokuInput').value = '';
+    }
+
+    function generateRandomPuzzle() {
+      const puzzle = generateNewSudokuPuzzle();
+      addChatMessage("Generated Random Sudoku Puzzle:", "bot");
+      displaySudoku(puzzle);
+      addChatMessage("I have generated a random Sudoku puzzle. Do you want the solution? Type 'yes' or 'no'.", "bot");
+
+      // Store the generated puzzle and solution
+      generatedPuzzle = puzzle;
+      solvedPuzzle = JSON.parse(JSON.stringify(puzzle)); // Copy puzzle for solving
+      solveSudoku(solvedPuzzle); // Solve the puzzle in the background but DO NOT display it yet
+    }
+
+    function openGridPopup() {
+      const overlay = document.getElementById('overlay');
+      const gridPopup = document.getElementById('gridPopup');
+      overlay.style.display = 'block';
+      gridPopup.style.display = 'block';
+      createSudokuGrid();
+    }
+
+    function closeGridPopup() {
+      const overlay = document.getElementById('overlay');
+      const gridPopup = document.getElementById('gridPopup');
+      overlay.style.display = 'none';
+      gridPopup.style.display = 'none';
+    }
+
+    function createSudokuGrid() {
+      const gridDiv = document.getElementById('sudokuGrid');
+      gridDiv.innerHTML = ''; // Clear previous grid
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          const input = document.createElement('input');
+          input.type = 'number';
+          input.max = 9;
+          input.min = 1;
+          input.placeholder = '';
+          gridDiv.appendChild(input);
+        }
+      }
+    }
+
+    function submitGridPuzzle() {
+      const gridDiv = document.getElementById('sudokuGrid');
+      const grid = [];
+      let isValid = true;
+
+      // Collect values from the grid
+      let inputs = gridDiv.getElementsByTagName('input');
+      for (let i = 0; i < 81; i++) {
+        const value = parseInt(inputs[i].value) || 0;
+        grid[Math.floor(i / 9)] = grid[Math.floor(i / 9)] || [];
+        grid[Math.floor(i / 9)].push(value);
+        if (value && (value < 1 || value > 9)) {
+          isValid = false;
+        }
+      }
+
+      if (!isValid) {
+        addChatMessage("Invalid input. Please enter numbers between 1-9.", "bot");
+        return;
+      }
+
+      // Display the entered grid and close the popup
+      addChatMessage("You entered the following Sudoku puzzle:", "bot");
+      displaySudoku(grid);
+
+      // Solve the puzzle and display solution
+      solvedPuzzle = JSON.parse(JSON.stringify(grid));
+      solveSudoku(solvedPuzzle); // Solve the puzzle in background
+      addChatMessage("Do you want to see the solution? Type 'yes' or 'no'.", "bot");
+      closeGridPopup();
+    }
+
+    function generateNewSudokuPuzzle() {
+      let grid = Array.from({ length: 9 }, () => Array(9).fill(0));
+      fillSudoku(grid);
+      removeRandomCells(grid, 40); // Remove cells to create a puzzle
+      return grid;
+    }
+
+    function fillSudoku(grid) {
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          if (grid[row][col] === 0) {
+            for (let num = 1; num <= 9; num++) {
+              if (isValid(grid, row, col, num)) {
+                grid[row][col] = num;
+                if (fillSudoku(grid)) return true; // Recursively try to fill
+                grid[row][col] = 0; // Backtrack if no solution is found
+              }
+            }
+            return false; // If no valid number can be placed
+          }
+        }
+      }
+      return true; // Grid is completely filled
+    }
+
+    function removeRandomCells(grid, count) {
+      let attempts = count;
+      while (attempts > 0) {
+        const row = Math.floor(Math.random() * 9);
+        const col = Math.floor(Math.random() * 9);
+        if (grid[row][col] !== 0) {
+          grid[row][col] = 0; // Remove the number
+          attempts--;
+        }
+      }
+    }
+
+    function isValid(grid, row, col, num) {
+      for (let i = 0; i < 9; i++) {
+        if (grid[row][i] === num || grid[i][col] === num) {
+          return false;
+        }
+      }
+      const startRow = Math.floor(row / 3) * 3;
+      const startCol = Math.floor(col / 3) * 3;
+      for (let i = startRow; i < startRow + 3; i++) {
+        for (let j = startCol; j < startCol + 3; j++) {
+          if (grid[i][j] === num) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+
+    function solveSudoku(grid) {
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          if (grid[row][col] === 0) {
+            for (let num = 1; num <= 9; num++) {
+              if (isValid(grid, row, col, num)) {
+                grid[row][col] = num;
+                if (solveSudoku(grid)) {
+                  return true;
+                }
+                grid[row][col] = 0; // Backtrack
+              }
+            }
+            return false; // No solution found
+          }
+        }
+      }
+      return true; // Puzzle solved
+    }
+
+    function displaySudoku(grid) {
+      const chatbox = document.getElementById('chatbox');
+      const sudokuDiv = document.createElement('div');
+      sudokuDiv.classList.add('sudoku-grid');
+
+      grid.forEach(row => {
+        row.forEach(cell => {
+          const input = document.createElement('input');
+          input.value = cell === 0 ? '' : cell;
+          input.disabled = true; // Disable input fields (read-only)
+          sudokuDiv.appendChild(input);
+        });
+      });
+
+      chatbox.appendChild(sudokuDiv);
+      chatbox.scrollTop = chatbox.scrollHeight; // Scroll to bottom
+    }
+  </script>
+
+</body>
+</html>

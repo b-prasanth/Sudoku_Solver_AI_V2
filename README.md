@@ -1,3 +1,6 @@
+                                                  AI - Mini Project
+                                                    Sudoku Solver
+
 Application Description:
 This is an AI mini project that uses backtracking search algorithm to solve any given sudoku puzzle.
 
@@ -15,16 +18,23 @@ Steps to run the application:
 
 UI Screenshots:
 1) Home page
-<img width="967" alt="image" src="https://github.com/user-attachments/assets/8ce83410-b2bb-42de-82f8-27c8be946691">
+<img width="1469" alt="image" src="https://github.com/user-attachments/assets/0831afc4-e61d-4638-b4b9-9fdb474facb9">
 
 2) Generate random sudoku puzzle
-<img width="810" alt="image" src="https://github.com/user-attachments/assets/d767442f-a7b7-403f-bebb-967eaa004d6b">
+<img width="1470" alt="image" src="https://github.com/user-attachments/assets/07d69c0f-8b88-4ccb-b0ae-3b8362aa3be7">
 
-3) Entering puzzle in grid
-<img width="887" alt="image" src="https://github.com/user-attachments/assets/04e544ce-41d6-4222-9225-765f0d7b72c0">
+3) Random puzzle solution
+<img width="1466" alt="image" src="https://github.com/user-attachments/assets/9eb36697-12ea-47fa-8929-c39dcb86dc47">
 
-4) Entering 9x9 array
-<img width="566" alt="image" src="https://github.com/user-attachments/assets/071fc132-c8d2-4725-8645-94fa803e4d97">
+4) Entering puzzle in grid
+<img width="1463" alt="image" src="https://github.com/user-attachments/assets/985c9ffb-901f-4167-a42a-d76d8e428ee7">
 
-5) View Solution
-<img width="742" alt="image" src="https://github.com/user-attachments/assets/d3045aac-4e58-4254-9fbe-ab8b257e347c">
+5) Solution for puzzle in grid
+<img width="1464" alt="image" src="https://github.com/user-attachments/assets/236dc82e-ab77-4070-9d91-29520639ffe2">
+
+6) Entering 9x9 array
+<img width="1460" alt="image" src="https://github.com/user-attachments/assets/b866d8ca-c592-47ca-b3aa-0791c60489d2">
+
+7) View Solution for 9x9 array
+<img width="1464" alt="image" src="https://github.com/user-attachments/assets/22498914-4025-4a5d-ad4c-60d08ae90470">
+

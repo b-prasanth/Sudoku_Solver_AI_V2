@@ -23,5 +23,8 @@ UI Screenshots:
 3) Entering puzzle in grid
 <img width="887" alt="image" src="https://github.com/user-attachments/assets/04e544ce-41d6-4222-9225-765f0d7b72c0">
 
-4) View Solution
+4) Entering 9x9 array
+<img width="566" alt="image" src="https://github.com/user-attachments/assets/071fc132-c8d2-4725-8645-94fa803e4d97">
+
+5) View Solution
 <img width="742" alt="image" src="https://github.com/user-attachments/assets/d3045aac-4e58-4254-9fbe-ab8b257e347c">

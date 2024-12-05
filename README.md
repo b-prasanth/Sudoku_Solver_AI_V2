@@ -18,7 +18,7 @@ Steps to run the application:
 
 Demo:
 
-https://github.com/user-attachments/assets/1ace5bb0-aba4-4ff1-9b1c-1ef9829ea8e9
+https://github.com/user-attachments/assets/5861c8bc-2783-4a61-9d5b-9755379297d1
 
 UI Screenshots:
 1) Home page

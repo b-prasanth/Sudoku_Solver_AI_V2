@@ -16,6 +16,10 @@ Steps to run the application:
   1) Run the command "python app.py" in terminal to start the flask server.
   2) Open the html file in browser.
 
+Demo:
+
+https://github.com/user-attachments/assets/1ace5bb0-aba4-4ff1-9b1c-1ef9829ea8e9
+
 UI Screenshots:
 1) Home page
 <img width="1469" alt="image" src="https://github.com/user-attachments/assets/0831afc4-e61d-4638-b4b9-9fdb474facb9">
